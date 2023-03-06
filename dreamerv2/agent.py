@@ -3,6 +3,7 @@ from tensorflow.keras import mixed_precision as prec
 
 import common
 import expl
+import pdb
 
 
 class Agent(common.Module):
@@ -146,13 +147,15 @@ class WorldModel(common.Module):
       for key, value in {**state, 'action': action, 'feat': feat}.items():
         seq[key].append(value)
     seq = {k: tf.stack(v, 0) for k, v in seq.items()}
+    pdb.set_trace()
     if 'discount' in self.heads:
       disc = self.heads['discount'](seq['feat']).mean()
       if is_terminal is not None:
+        pdb.set_trace()
         # Override discount prediction for the first step with the true
         # discount factor from the replay buffer.
-        true_first = 1.0 - flatten(is_terminal).astype(disc.dtype)
-        true_first *= self.config.discount
+        true_first = 1.0 - flatten(is_terminal).astype(disc.dtype) #true falseを1,0変換
+        true_first *= self.config.discount #基本0.99 trueは0になる
         disc = tf.concat([true_first[None], disc[1:]], 0)
     else:
       disc = self.config.discount * tf.ones(seq['feat'].shape[:-1])
@@ -236,6 +239,7 @@ class ActorCritic(common.Module):
     # them to scale the whole sequence.
     with tf.GradientTape() as actor_tape:
       seq = world_model.imagine(self.actor, start, is_terminal, hor)
+      pdb.set_trace()
       reward = reward_fn(seq)
       seq['reward'], mets1 = self.rewnorm(reward)
       mets1 = {f'reward_{k}': v for k, v in mets1.items()}

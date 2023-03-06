@@ -3,7 +3,15 @@ version: "3"
 services:
   app:
     build: .
+    tty: true
     volumes:
       - .:/app
     ports:
       - 8000:6006
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

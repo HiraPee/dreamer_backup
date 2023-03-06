@@ -18,12 +18,14 @@ RUN mkdir -p /root/.mujoco && \
 
 # Python packages.
 RUN pip3 install --no-cache-dir \
-  'gym[atari]' \
+  'gym[atari]==0.18.3' \
   atari_py \
   crafter \
   dm_control \
   ruamel.yaml \
   tensorflow_probability==0.12.2
+#COPY ./requirements.txt ./
+#RUN pip install -r requirements.txt
 
 # Atari ROMS.
 RUN wget -L -nv http://www.atarimania.com/roms/Roms.rar && \
